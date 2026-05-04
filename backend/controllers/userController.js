@@ -65,7 +65,6 @@ export const purchaseCourse = async (req, res) => {
     const { origin } = req.headers;
     const { userId } = getAuth(req);
 
-    // find user using clerkId
     const userData = await User.findOne({ clerkId: userId });
     const courseData = await Course.findById(courseId);
 
@@ -76,50 +75,21 @@ export const purchaseCourse = async (req, res) => {
       });
     }
 
-    // calculate amount (NUMBER, not string)
     const amount =
       courseData.coursePrice -
       (courseData.discount * courseData.coursePrice) / 100;
 
-    // const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
-    // const session = await stripe.checkout.sessions.create({
-    //   payment_method_types: ["card"],
-    //   mode: "payment",
-
-    //   line_items: [
-    //     {
-    //       price_data: {
-    //         currency: process.env.CURRENCY.toLowerCase(),
-    //         product_data: {
-    //           name: courseData.courseTitle,
-    //         },
-    //         unit_amount: Math.floor(amount * 100),
-    //       },
-    //       quantity: 1,
-    //     },
-    //   ],
-
-    //   metadata: {
-    //     courseId: courseId,
-    //     userId: userId,
-    //   },
-
-    //   success_url: `${origin}/loading/my-enrollments`,
-    //   cancel_url: `${origin}/`,
-    // });
-
-    // ✅ Step 1: create purchase first
+    // ✅ STEP 1: create purchase
     const newPurchase = await Purchase.create({
-      courseId: courseId,
-      userId: userId,
-      amount: amount,
+      courseId,
+      userId,
+      amount,
       status: "pending",
     });
 
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-    // ✅ Step 2: include purchaseId in metadata
+    // ✅ STEP 2: create stripe session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       mode: "payment",
@@ -138,7 +108,7 @@ export const purchaseCourse = async (req, res) => {
       ],
 
       metadata: {
-        purchaseId: newPurchase._id.toString(), // 🔥 IMPORTANT
+        purchaseId: newPurchase._id.toString(), // 🔥 KEY
       },
 
       success_url: `${origin}/loading/my-enrollments`,

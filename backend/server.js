@@ -149,7 +149,7 @@ app.use(
 */
 
 
-app.post('/api/webhook/stripe', express.raw({ type: 'application/json' }), stripeWebhooks);
+app.post('/api/webhook/stripe', express.raw({ type: "application/json" }), stripeWebhooks);
 
 
 
