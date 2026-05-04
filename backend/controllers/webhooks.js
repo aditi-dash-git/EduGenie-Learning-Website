@@ -2,6 +2,8 @@ import { Webhook } from "svix";
 import User from "../models/User.js";
 import Stripe from "stripe";
 import Course from "../models/Course.js";
+import Purchase from "../models/Purchase.js";
+
 
 const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -58,14 +60,13 @@ export const clerkWebhooks = async (req, res) => {
   }
 };
 
-// ================= STRIPE WEBHOOK =================
 export const stripeWebhooks = async (req, res) => {
   const sig = req.headers["stripe-signature"];
 
   let event;
 
   try {
-    // ✅ IMPORTANT: req.body must be RAW (you already configured this in server.js)
+    // ⚠️ req.body must be RAW buffer (server.js already handled)
     event = stripeInstance.webhooks.constructEvent(
       req.body,
       sig,
@@ -76,7 +77,7 @@ export const stripeWebhooks = async (req, res) => {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
-  console.log("🔥 Stripe Webhook:", event.type);
+  console.log("🔥 Stripe Event:", event.type);
 
   try {
     if (event.type === "checkout.session.completed") {
@@ -84,7 +85,7 @@ export const stripeWebhooks = async (req, res) => {
 
       const { courseId, userId } = session.metadata;
 
-      // fetch user & course
+      // ================= FETCH DATA =================
       const userData = await User.findOne({ clerkId: userId });
       const courseData = await Course.findById(courseId);
 
@@ -93,7 +94,7 @@ export const stripeWebhooks = async (req, res) => {
         return res.json({ received: true });
       }
 
-      // ✅ FIXED ObjectId comparison
+      // ================= ENROLL USER =================
       const isStudentEnrolled = courseData.enrolledStudents.some(
         (id) => id.toString() === userData._id.toString()
       );
@@ -112,12 +113,44 @@ export const stripeWebhooks = async (req, res) => {
         await userData.save();
       }
 
-      console.log("✅ Payment success → User enrolled");
+      // ================= UPDATE PURCHASE =================
+      const purchaseData = await Purchase.findOne({
+        courseId,
+        userId,
+        status: "pending",
+      });
+
+      if (purchaseData) {
+        purchaseData.status = "completed";
+        await purchaseData.save();
+      }
+
+      console.log("✅ Payment success → enrolled + purchase updated");
+    }
+
+    // ================= FAILURE CASE =================
+    if (event.type === "checkout.session.async_payment_failed") {
+      const session = event.data.object;
+      const { courseId, userId } = session.metadata;
+
+      const purchaseData = await Purchase.findOne({
+        courseId,
+        userId,
+        status: "pending",
+      });
+
+      if (purchaseData) {
+        purchaseData.status = "failed";
+        await purchaseData.save();
+      }
+
+      console.log("❌ Payment failed → purchase updated");
     }
 
     res.json({ received: true });
+
   } catch (error) {
-    console.log("🔥 INTERNAL ERROR:", error);
+    console.log("🔥 INTERNAL ERROR:", error.message);
     res.status(500).json({ error: error.message });
   }
 };
