@@ -66,31 +66,49 @@ export const stripeWebhooks = async (req, res) => {
     const event = stripeInstance.webhooks.constructEvent(
       req.body,
       sig,
-      process.env.STRIPE_WEBHOOK_SECRET,
+      process.env.STRIPE_WEBHOOK_SECRET
     );
+
     console.log("🔥 EVENT TYPE:", event.type);
 
-    if (event.type === "payment_intent.succeeded") {
-      const paymentIntent = event.data.object;
+    if (event.type === "checkout.session.completed") {
+      const session = event.data.object;
 
-      console.log("PaymentIntent:", paymentIntent);
+      const purchaseId = session.metadata?.purchaseId;
 
-      const userId = paymentIntent.metadata?.userId;
-
-      if (!userId) {
-        console.log("❌ No userId found in metadata");
+      if (!purchaseId) {
+        console.log("❌ No purchaseId found in metadata");
         return res.status(200).json({ received: true });
       }
 
-      // Example DB operation
-      // await User.findByIdAndUpdate(userId, { premium: true });
+      console.log("✅ Purchase ID:", purchaseId);
 
-      console.log("✅ Payment processed for user:", userId);
+      // 🔥 Update purchase status
+      await Purchase.findByIdAndUpdate(purchaseId, {
+        status: "completed",
+      });
+
+      // 🔥 Get purchase details
+      const purchase = await Purchase.findById(purchaseId);
+
+      if (!purchase) {
+        console.log("❌ Purchase not found");
+        return res.status(200).json({ received: true });
+      }
+
+      // 🔥 Enroll user in course
+      await User.findOneAndUpdate(
+        { clerkId: purchase.userId },
+        { $addToSet: { enrolledCourses: purchase.courseId } }
+      );
+
+      console.log("🎉 User enrolled successfully");
     }
 
     return res.status(200).json({ received: true });
+
   } catch (error) {
     console.error("❌ Webhook Error:", error.message);
-    return res.status(200).json({ received: true }); // IMPORTANT for Stripe
+    return res.status(200).json({ received: true });
   }
 };
