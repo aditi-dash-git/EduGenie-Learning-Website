@@ -106,7 +106,9 @@ import flashcardRoutes from './routes/flashcardRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
 import quizRoutes from './routes/quizRoutes.js';
 import progressRoutes from './routes/progressRoutes.js';
-import { clerkWebhooks } from './controllers/webhooks.js';
+import { clerkWebhooks, stripeWebhooks } from './controllers/webhooks.js';
+import educatorRouter from './routes/educatorRoutes.js';
+import connectCloudinary from './config/cloudinary.js';
 
 /* NEW ROUTES */
 // import courseRoutes from './routes/courseRoutes.js';
@@ -122,6 +124,15 @@ const app = express();
 
 /* Connect DB */
 connectDB();
+connectCloudinary();
+import { v2 as cloudinary } from "cloudinary";
+import courseRouter from './routes/courseRoutes.js';
+import userRouter from './routes/userRoutes.js';
+
+cloudinary.api.ping()
+.then(result => console.log("PING:", result))
+.catch(err => console.log("PING ERROR:", err));
+// console.log("Cloudinary Connected");
 
 /* CORS */
 app.use(
@@ -136,7 +147,9 @@ app.use(
 /* IMPORTANT:
  Clerk middleware before protected routes
 */
-// app.use(clerkMiddleware());
+
+
+app.post('/api/webhook/stripe',express.raw({ type: 'application/json' }),stripeWebhooks);
 
 /* Body parsing */
 app.use(express.json());
@@ -145,6 +158,7 @@ app.use(express.urlencoded({ extended:true }));
 /* Static uploads */
 app.use('/uploads', express.static(path.join(__dirname,'uploads')));
 
+app.use(clerkMiddleware());
 
 /* ---------------- WEBHOOK ---------------- */
 app.post('/clerk', express.json(), clerkWebhooks);
@@ -152,7 +166,7 @@ app.post('/clerk', express.json(), clerkWebhooks);
 
 /* ---------------- EXISTING ROUTES ---------------- */
 
-app.use('/api/auth', authRoutes); 
+// app.use('/api/auth', authRoutes); 
 // Later old login/signup can be phased out if using only Clerk
 
 app.use('/api/documents', documentRoutes);
@@ -160,6 +174,11 @@ app.use('/api/flashcards', flashcardRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/quizzes', quizRoutes);
 app.use('/api/progress', progressRoutes);
+
+
+app.use('/api/educator', educatorRouter);
+app.use('/api/course', courseRouter);
+app.use('/api/user', userRouter);
 
 
 /* ---------------- NEW ROUTES ---------------- */

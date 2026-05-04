@@ -11,12 +11,12 @@
 //     },
 
 //     email: {
-//         type: String, 
+//         type: String,
 //         required: [true, 'Please provide an email'],
 //         unique: true,
 //         lowercase: true,
 //         match: [/^\S+@\S+\.\S+$/, 'Please provide a valid email']
-//     }, 
+//     },
 
 //     password :{
 //         type: String,
@@ -32,7 +32,6 @@
 // }, {
 //     timestamps: true
 // });
-
 
 // //Hash password before saving
 // userSchema.pre('save', async function() {
@@ -75,55 +74,49 @@
 
 // export default User
 
-
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
-{
-  clerkId: {
-    type: String,
-    required: true,
-    unique: true
-  },
+  {
+    clerkId: {
+      type: String,
+      required: true,
+      unique: true,
+    },
 
-  username: {
-    type: String,
-    trim: true
-  },
 
-  name: {
-    type: String,
-    required: true
-  },
+    name: {
+      type: String,
+      required: true,
+    },
 
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    lowercase: true
-  },
+    email: {
+      type: String,
+      required: true,
+      lowercase: true,
+    },
 
-  imageUrl: {
-    type: String,
-    default: ""
-  },
+    imageUrl: {
+      type: String,
+      default: "",
+    },
 
-  role: {
-    type: String,
-    enum: ["student", "educator"],
-    default: "student"
-  },
+    role: {
+      type: String,
+      enum: ["student", "educator"],
+      default: "student",
+    },
 
-  enrolledCourses: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Course"
-    }
-  ]
-},
-{
-  timestamps: true
-}
+    enrolledCourses: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Course",
+      },
+    ],
+  },
+  {
+    timestamps: true,
+  },
 );
 
 const User = mongoose.model("User", userSchema);
