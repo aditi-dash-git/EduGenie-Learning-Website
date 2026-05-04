@@ -60,21 +60,40 @@ export const clerkWebhooks = async (req, res) => {
 const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export const stripeWebhooks = async (req, res) => {
+  // const sig = req.headers["stripe-signature"];
+
+  // let event;
+  // console.log("🔥 STRIPE WEBHOOK HIT");
+
+  // try {
+  //   event = stripeInstance.webhooks.constructEvent(
+  //     req.body,
+  //     sig,
+  //     process.env.STRIPE_WEBHOOK_SECRET,
+  //   );
+  // } catch (err) {
+  //   console.log("Webhook Error:", err.message);
+  //   return res.status(400).send(`Webhook Error: ${err.message}`);
+  // }
+
   const sig = req.headers["stripe-signature"];
 
   let event;
-  console.log("🔥 STRIPE WEBHOOK HIT");
 
   try {
+    const rawBody = await getRawBody(req);
+
     event = stripeInstance.webhooks.constructEvent(
-      req.body,
+      rawBody,
       sig,
       process.env.STRIPE_WEBHOOK_SECRET,
     );
   } catch (err) {
-    console.log("Webhook Error:", err.message);
+    console.log("❌ Webhook signature failed:", err.message);
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
+
+  console.log("🔥 STRIPE WEBHOOK HIT:", event.type);
 
   switch (event.type) {
     case "checkout.session.completed": {
