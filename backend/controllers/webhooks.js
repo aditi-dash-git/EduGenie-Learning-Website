@@ -63,6 +63,7 @@ export const clerkWebhooks = async (req, res) => {
 
 
 export const stripeWebhooks = async (req, res) => {
+  console.log("🔥 WEBHOOK HIT");
   const sig = req.headers["stripe-signature"];
 
   let event;

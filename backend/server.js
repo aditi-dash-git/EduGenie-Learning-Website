@@ -122,6 +122,9 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+app.post('/api/webhook/stripe', express.raw({ type: "application/json" }), stripeWebhooks);
+
+
 /* Connect DB */
 connectDB();
 connectCloudinary();
@@ -149,12 +152,11 @@ app.use(
 */
 
 
-app.post('/api/webhook/stripe', express.raw({ type: "application/json" }), stripeWebhooks);
 
 
 
 /* Body parsing */
-app.use(express.json());
+// app.use(express.json());
 app.use(express.urlencoded({ extended:true }));
 
 /* Static uploads */
@@ -171,16 +173,16 @@ app.post('/clerk', express.json(), clerkWebhooks);
 // app.use('/api/auth', authRoutes); 
 // Later old login/signup can be phased out if using only Clerk
 
-app.use('/api/documents', documentRoutes);
-app.use('/api/flashcards', flashcardRoutes);
-app.use('/api/ai', aiRoutes);
-app.use('/api/quizzes', quizRoutes);
-app.use('/api/progress', progressRoutes);
+app.use('/api/documents',express.json(), documentRoutes);
+app.use('/api/flashcards',express.json(), flashcardRoutes);
+app.use('/api/ai',express.json(), aiRoutes);
+app.use('/api/quizzes',express.json(), quizRoutes);
+app.use('/api/progress',express.json(), progressRoutes);
 
 
-app.use('/api/educator', educatorRouter);
-app.use('/api/course', courseRouter);
-app.use('/api/user', userRouter);
+app.use('/api/educator',express.json(), educatorRouter);
+app.use('/api/course',express.json(), courseRouter);
+app.use('/api/user',express.json(), userRouter);
 
 
 /* ---------------- NEW ROUTES ---------------- */
