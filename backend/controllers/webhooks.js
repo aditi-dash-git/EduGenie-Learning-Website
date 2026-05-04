@@ -66,7 +66,7 @@ export const stripeWebhooks = async (req, res) => {
     const event = stripeInstance.webhooks.constructEvent(
       req.body,
       sig,
-      process.env.STRIPE_WEBHOOK_SECRET
+      process.env.STRIPE_WEBHOOK_SECRET,
     );
 
     console.log("🔥 EVENT TYPE:", event.type);
@@ -88,21 +88,28 @@ export const stripeWebhooks = async (req, res) => {
 
     console.log("✅ Purchase ID:", purchaseId);
 
+    //Update Purchase
     await Purchase.findByIdAndUpdate(purchaseId, {
       status: "completed",
     });
 
+    //get Purchase
     const purchase = await Purchase.findById(purchaseId);
 
+    //Update user
     await User.findOneAndUpdate(
       { clerkId: purchase.userId },
-      { $addToSet: { enrolledCourses: purchase.courseId } }
+      { $addToSet: { enrolledCourses: purchase.courseId } },
     );
 
     console.log("🎉 User enrolled successfully");
 
-    return res.status(200).json({ received: true });
+    // ✅ Update course (THIS WAS MISSING)
+    await Course.findByIdAndUpdate(purchase.courseId, {
+      $addToSet: { enrolledStudents: purchase.userId },
+    });
 
+    return res.status(200).json({ received: true });
   } catch (error) {
     console.error("❌ Webhook Error:", error.message);
     return res.status(200).json({ received: true });
