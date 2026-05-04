@@ -63,6 +63,7 @@ export const stripeWebhooks = async (req, res) => {
   const sig = req.headers["stripe-signature"];
 
   let event;
+  console.log("🔥 STRIPE WEBHOOK HIT");
 
   try {
     event = stripeInstance.webhooks.constructEvent(
@@ -77,6 +78,7 @@ export const stripeWebhooks = async (req, res) => {
 
   switch (event.type) {
     case "checkout.session.completed": {
+      console.log("EVENT TYPE:", event.type);
       const session = event.data.object;
 
       const { purchaseId } = session.metadata;

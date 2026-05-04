@@ -149,8 +149,7 @@ app.use(
 */
 
 
-app.post('/stripe',express.raw({ type: 'application/json' }),stripeWebhooks);
-
+app.post('/api/webhook/stripe', express.raw({ type: 'application/json' }), stripeWebhooks);
 /* Body parsing */
 app.use(express.json());
 app.use(express.urlencoded({ extended:true }));
