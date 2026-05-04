@@ -1,4 +1,4 @@
-import Stripe from "stripe"
+import Stripe from "stripe";
 import Course from "../models/Course.js";
 import Purchase from "../models/Purchase.js";
 import User from "../models/User.js";
@@ -81,8 +81,45 @@ export const purchaseCourse = async (req, res) => {
       courseData.coursePrice -
       (courseData.discount * courseData.coursePrice) / 100;
 
+    // const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+    // const session = await stripe.checkout.sessions.create({
+    //   payment_method_types: ["card"],
+    //   mode: "payment",
+
+    //   line_items: [
+    //     {
+    //       price_data: {
+    //         currency: process.env.CURRENCY.toLowerCase(),
+    //         product_data: {
+    //           name: courseData.courseTitle,
+    //         },
+    //         unit_amount: Math.floor(amount * 100),
+    //       },
+    //       quantity: 1,
+    //     },
+    //   ],
+
+    //   metadata: {
+    //     courseId: courseId,
+    //     userId: userId,
+    //   },
+
+    //   success_url: `${origin}/loading/my-enrollments`,
+    //   cancel_url: `${origin}/`,
+    // });
+
+    // ✅ Step 1: create purchase first
+    const newPurchase = await Purchase.create({
+      courseId: courseId,
+      userId: userId,
+      amount: amount,
+      status: "pending",
+    });
+
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
+    // ✅ Step 2: include purchaseId in metadata
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       mode: "payment",
@@ -101,8 +138,7 @@ export const purchaseCourse = async (req, res) => {
       ],
 
       metadata: {
-        courseId: courseId,
-        userId: userId,
+        purchaseId: newPurchase._id.toString(), // 🔥 IMPORTANT
       },
 
       success_url: `${origin}/loading/my-enrollments`,
@@ -113,7 +149,6 @@ export const purchaseCourse = async (req, res) => {
       success: true,
       session_url: session.url,
     });
-
   } catch (error) {
     res.json({
       success: false,
