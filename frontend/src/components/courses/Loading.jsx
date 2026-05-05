@@ -6,13 +6,12 @@ const Loading = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (path) {
-      const timer = setTimeout(() => {
-        navigate(`/${path}`);
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [path, navigate]);
+    const timer = setTimeout(() => {
+    navigate("/my-enrollments");
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center">

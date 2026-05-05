@@ -3,7 +3,22 @@ import User from "../models/User.js";
 import { v2 as cloudinary } from "cloudinary";
 import Course from "../models/Course.js";
 import Purchase from "../models/Purchase.js";
+import streamifier from "streamifier";
 
+//Helper Function for Cloudinary Uploads
+const uploadFromBuffer = (buffer) => {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { folder: "courses" },
+      (error, result) => {
+        if (error) reject(error);
+        else resolve(result);
+      },
+    );
+
+    streamifier.createReadStream(buffer).pipe(stream);
+  });
+};
 
 //Update Role
 export const updateRoleToEducator = async (req, res) => {
@@ -62,12 +77,14 @@ export const addCourse = async (req, res) => {
     const { userId } = getAuth(req);
     parsedCourseData.educator = userId;
 
-    const imageUpload = await cloudinary.uploader.upload(imageFile.path, {
-      folder: "courses",
-      use_filename: true,
-      unique_filename: false,
-      overwrite: true,
-    });
+    // const imageUpload = await cloudinary.uploader.upload(imageFile.path, {
+    //   folder: "courses",
+    //   use_filename: true,
+    //   unique_filename: false,
+    //   overwrite: true,
+    // });
+
+    const imageUpload = await uploadFromBuffer(imageFile.buffer);
 
     parsedCourseData.courseThumbnail = imageUpload.secure_url;
 
@@ -148,7 +165,7 @@ export const educatorDashboardData = async (req, res) => {
 
     for (const course of courses) {
       const students = await User.find(
-        { _id: { $in: course.enrolledStudents } },
+        { clerkId: { $in: course.enrolledStudents || [] } },
         "name imageUrl",
       );
 
@@ -203,7 +220,7 @@ export const getEnrolledStudentsData = async (req, res) => {
     for (const purchase of purchases) {
       const student = await User.findOne(
         { clerkId: purchase.userId }, // important
-        "name imageUrl"
+        "name imageUrl",
       );
 
       enrolledStudents.push({
@@ -217,7 +234,6 @@ export const getEnrolledStudentsData = async (req, res) => {
       success: true,
       enrolledStudents,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,

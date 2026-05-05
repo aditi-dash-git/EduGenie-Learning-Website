@@ -4,6 +4,7 @@ import Stripe from "stripe";
 import Course from "../models/Course.js";
 import Purchase from "../models/Purchase.js";
 
+
 const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 // ================= CLERK WEBHOOK =================
@@ -24,9 +25,9 @@ export const clerkWebhooks = async (req, res) => {
         await User.create({
           clerkId: data.id,
           email: data.email_addresses[0].email_address,
-          name: data.first_name + " " + data.last_name,
+          name: `${data.first_name || ""} ${data.last_name || ""}`.trim(),
           imageUrl: data.image_url,
-          username: data.username || "",
+          // username: data.username || "",
         });
         break;
       }
@@ -36,7 +37,7 @@ export const clerkWebhooks = async (req, res) => {
           { clerkId: data.id },
           {
             email: data.email_addresses[0].email_address,
-            name: data.first_name + " " + data.last_name,
+            name: `${data.first_name || ""} ${data.last_name || ""}`.trim(),
             imageUrl: data.image_url,
           },
         );

@@ -114,7 +114,7 @@ const App = () => {
         </Route>
         {/* </Route> */}
         {/* 404 */}
-        <Route path="/home/loading/:path" element={<Loading />} />{" "}
+        <Route path="/loading/:path" element={<Loading />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </div>

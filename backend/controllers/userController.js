@@ -4,7 +4,7 @@ import Purchase from "../models/Purchase.js";
 import User from "../models/User.js";
 import { getAuth } from "@clerk/express";
 // import { CourseProgress } from "../models/courseProgress.js";
-import {CourseProgress} from "../models/CourseProgress.js"
+import { CourseProgress } from "../models/CourseProgress.js";
 
 // Get User Data
 export const getUserData = async (req, res) => {
@@ -132,7 +132,7 @@ export const purchaseCourse = async (req, res) => {
 // Update User Course Progress
 export const updateUserCourseProgress = async (req, res) => {
   try {
-    const userId = req.auth.userId;
+    const { userId } = getAuth(req);
     const { courseId, lectureId } = req.body;
     const progressData = await CourseProgress.findOne({ userId, courseId });
 
@@ -144,7 +144,11 @@ export const updateUserCourseProgress = async (req, res) => {
         });
       }
 
-      progressData.lectureCompleted.push(lectureId);
+      if (!lectureId) {
+        return res.json({ success: false, message: "Invalid lectureId" });
+      }
+
+      progressData.lectureCompleted.push(lectureId.toString());
       await progressData.save();
     } else {
       await CourseProgress.create({
@@ -201,10 +205,16 @@ export const getUserCourseProgress = async (req, res) => {
 // Add User Ratings to Course
 
 export const addUserRating = async (req, res) => {
-  const userId = req.auth.userId;
+  const { userId } = getAuth(req);
   const { courseId, rating } = req.body;
 
-  if (!courseId || !userId || !rating || rating < 1 || rating > 5) {
+  if (
+    !courseId ||
+    !userId ||
+    rating === undefined ||
+    rating < 1 ||
+    rating > 5
+  ) {
     return res.json({ success: false, message: "InValid Details" });
   }
 
@@ -229,7 +239,8 @@ export const addUserRating = async (req, res) => {
     }
 
     const existingRatingIndex = course.courseRatings.findIndex(
-      (r) => r.userId.toString() === userId,
+      // (r) => r.userId.toString() === userId,
+      (r) => r.userId === userId,
     );
 
     if (existingRatingIndex > -1) {
