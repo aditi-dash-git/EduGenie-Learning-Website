@@ -3,7 +3,8 @@ import Course from "../models/Course.js";
 import Purchase from "../models/Purchase.js";
 import User from "../models/User.js";
 import { getAuth } from "@clerk/express";
-import { CourseProgress } from "../models/courseProgress.js";
+// import { CourseProgress } from "../models/courseProgress.js";
+import {CourseProgress} from "../models/CourseProgress.js"
 
 // Get User Data
 export const getUserData = async (req, res) => {

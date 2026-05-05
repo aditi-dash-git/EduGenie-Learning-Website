@@ -160,7 +160,7 @@ app.use(
 
 
 /* Body parsing */
-// app.use(express.json());
+app.use(express.json());
 app.use(express.urlencoded({ extended:true }));
 
 /* Static uploads */
