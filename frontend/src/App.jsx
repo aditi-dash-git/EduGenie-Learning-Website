@@ -74,11 +74,9 @@ const App = () => {
             )
           }
         />
-
         {/* Auth */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-
         {/* ================= MAIN (NO SIDEBAR) ================= */}
         <Route element={<ProtectedRoute />}>
           {/* <Route element={<MainLayout />}> */}
@@ -90,7 +88,6 @@ const App = () => {
           <Route path="/my-enrollments" element={<MyEnrollments />} />
           {/* </Route> */}
         </Route>
-
         {/* ================= DASHBOARD (WITH SIDEBAR) ================= */}
         <Route element={<ProtectedRoute />}>
           {/* <Route element={<StudentLayout />}> */}
@@ -104,7 +101,6 @@ const App = () => {
           <Route path="/profile" element={<ProfilePage />} />
           {/* </Route> */}
         </Route>
-
         {/* ================= EDUCATOR ================= */}
         <Route element={<ProtectedRoute />}>
           {/* <Route element={<EducatorRoute />}> */}
@@ -117,9 +113,8 @@ const App = () => {
           </Route>
         </Route>
         {/* </Route> */}
-
         {/* 404 */}
-        <Route path="/loading/:path" element={<Loading />} />
+        <Route path="/home/loading/:path" element={<Loading />} />{" "}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </div>
