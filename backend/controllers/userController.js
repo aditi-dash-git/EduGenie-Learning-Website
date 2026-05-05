@@ -3,6 +3,7 @@ import Course from "../models/Course.js";
 import Purchase from "../models/Purchase.js";
 import User from "../models/User.js";
 import { getAuth } from "@clerk/express";
+import { CourseProgress } from "../models/courseProgress.js";
 
 // Get User Data
 export const getUserData = async (req, res) => {
@@ -161,13 +162,19 @@ export const updateUserCourseProgress = async (req, res) => {
 // get User Course Progress
 export const getUserCourseProgress = async (req, res) => {
   try {
-    const userId = req.auth.userId;
-    const { courseId } = req.params;
+    // const userId = req.auth.userId;
+    const { userId } = getAuth(req);
+    // const { courseId } = req.params;
+    const { courseId } = req.body;
 
     // 🔒 Check if user is enrolled
     const user = await User.findOne({ clerkId: userId });
 
-    if (!user.enrolledCourses.includes(courseId)) {
+    const isEnrolled = user.enrolledCourses.some(
+      (id) => id.toString() === courseId,
+    );
+
+    if (!isEnrolled) {
       return res.status(403).json({
         success: false,
         message: "User not enrolled in this course",
@@ -181,6 +188,8 @@ export const getUserCourseProgress = async (req, res) => {
       progressData: progressData || { lectureCompleted: [] },
     });
   } catch (error) {
+    console.log("ERROR:", error); // 🔥 ADD THIS
+
     res.status(500).json({
       success: false,
       message: error.message,

@@ -42,6 +42,8 @@ import NotFoundPage from "./pages/NotFoundPage";
 import Header from "./components/layout/Header";
 import Educator from "./pages/Educator/Educator";
 import "quill/dist/quill.snow.css";
+import { ToastContainer } from "react-toastify";
+import Loading from "./components/courses/Loading";
 
 const App = () => {
   const { isAuthenticated, loading } = useAuth();
@@ -57,6 +59,7 @@ const App = () => {
 
   return (
     <div className="text-default min-h-screen bg-white">
+      <ToastContainer />
       {!isEducatorRoute && <Header />}
       {/* <Header /> */}
       <Routes>
@@ -79,49 +82,44 @@ const App = () => {
         {/* ================= MAIN (NO SIDEBAR) ================= */}
         <Route element={<ProtectedRoute />}>
           {/* <Route element={<MainLayout />}> */}
-            <Route path="/home" element={<HomePage />} />
-            <Route path="/course-list" element={<CourseList />} />
-            <Route path="/course-list/:input" element={<CourseList />} />
-            <Route path="/courses/:id" element={<CourseDetails />} />
-            <Route path="/watch/:courseId" element={<PlayerPage />} />
-            <Route path="/my-enrollments" element={<MyEnrollments />} />
+          <Route path="/home" element={<HomePage />} />
+          <Route path="/course-list" element={<CourseList />} />
+          <Route path="/course-list/:input" element={<CourseList />} />
+          <Route path="/courses/:id" element={<CourseDetails />} />
+          <Route path="/watch/:courseId" element={<PlayerPage />} />
+          <Route path="/my-enrollments" element={<MyEnrollments />} />
           {/* </Route> */}
         </Route>
 
         {/* ================= DASHBOARD (WITH SIDEBAR) ================= */}
         <Route element={<ProtectedRoute />}>
           {/* <Route element={<StudentLayout />}> */}
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/documents" element={<DocumentListPage />} />
-            <Route path="/documents/:id" element={<DocumentDetailPage />} />
-            <Route path="/flashcards" element={<FlashcardsListPage />} />
-            <Route
-              path="/documents/:id/flashcards"
-              element={<FlashcardPage />}
-            />
-            <Route path="/quizzes/:quizId" element={<QuizTakePage />} />
-            <Route
-              path="/quizzes/:quizId/results"
-              element={<QuizResultPage />}
-            />
-            <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/documents" element={<DocumentListPage />} />
+          <Route path="/documents/:id" element={<DocumentDetailPage />} />
+          <Route path="/flashcards" element={<FlashcardsListPage />} />
+          <Route path="/documents/:id/flashcards" element={<FlashcardPage />} />
+          <Route path="/quizzes/:quizId" element={<QuizTakePage />} />
+          <Route path="/quizzes/:quizId/results" element={<QuizResultPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
           {/* </Route> */}
         </Route>
 
         {/* ================= EDUCATOR ================= */}
         <Route element={<ProtectedRoute />}>
           {/* <Route element={<EducatorRoute />}> */}
-            {/* <Route element={<EducatorLayout />}> */}
-              <Route path="/educator" element={<Educator />}>
-              <Route path="/educator" element={<DashBoard />} />
-              <Route path="add-course" element={<AddCourse />} />
-              <Route path="my-courses" element={<MyCourses />} />
-              <Route path="student-enrolled" element={<StudentsEnrolled />} />
-            </Route>
+          {/* <Route element={<EducatorLayout />}> */}
+          <Route path="/educator" element={<Educator />}>
+            <Route path="/educator" element={<DashBoard />} />
+            <Route path="add-course" element={<AddCourse />} />
+            <Route path="my-courses" element={<MyCourses />} />
+            <Route path="student-enrolled" element={<StudentsEnrolled />} />
           </Route>
+        </Route>
         {/* </Route> */}
 
         {/* 404 */}
+        <Route path="/loading/:path" element={<Loading />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </div>

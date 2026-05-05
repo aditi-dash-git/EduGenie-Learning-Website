@@ -10,10 +10,13 @@ export const getAllCourse = async (req, res) => {
 
     const coursesWithEducator = await Promise.all(
       courses.map(async (course) => {
+        console.log("Course educator ID:", course.educator);
         const educator = await User.findOne(
           { clerkId: course.educator },
           "name imageUrl",
         );
+
+        console.log("Educator found:", educator);
 
         return {
           ...course._doc,

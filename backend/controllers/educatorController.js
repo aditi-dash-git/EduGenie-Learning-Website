@@ -4,6 +4,8 @@ import { v2 as cloudinary } from "cloudinary";
 import Course from "../models/Course.js";
 import Purchase from "../models/Purchase.js";
 
+
+//Update Role
 export const updateRoleToEducator = async (req, res) => {
   try {
     const { userId } = getAuth(req);

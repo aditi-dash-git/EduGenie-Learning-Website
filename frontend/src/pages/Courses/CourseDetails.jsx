@@ -4,8 +4,10 @@ import { AppContext } from "../../context/AppContext";
 import Loading from "../../components/courses/Loading";
 import { assets } from "../../assets/assets";
 import humanizeDuration from "humanize-duration";
-import Footer from "../../components/layout/Footer"
+import Footer from "../../components/layout/Footer";
 import YouTube from "react-youtube";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const CourseDetails = () => {
   const { id } = useParams();
@@ -23,24 +25,73 @@ const CourseDetails = () => {
     calculateCourseDuration,
     calculateNoOfLectures,
     currency,
+    backendUrl,
+    userData,
+    getToken,
   } = useContext(AppContext);
 
-  const fetchCourseData = () => {
-    const findCourse = allCourses.find(
-      (course) => course._id.toString() === id,
-    );
+  const fetchCourseData = async () => {
+    // const findCourse = allCourses.find(
+    //   (course) => course._id.toString() === id,
+    // );
 
-    console.log("FOUND COURSE:", findCourse);
+    // console.log("FOUND COURSE:", findCourse);
 
-    if (findCourse) {
-      setCourseData(findCourse);
+    // if (findCourse) {
+    //   setCourseData(findCourse);
+    // }
+
+    try {
+      const { data } = await axios.get(backendUrl + "/api/course/" + id);
+
+      if (data.success) {
+        setCourseData(data.courseData);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
     }
   };
+
+  //Buy the course
+  const enrollCourse = async () => {
+    try {
+      if (!userData) {
+        return toast.warn("Login to Enroll");
+      }
+      if (isAlreadyEnrolled) {
+        return toast.warn("Already Enrolled");
+      }
+      const token = await getToken();
+
+      const { data } = await axios.post(
+        backendUrl + "/api/user/purchase",
+        { courseId: courseData._id },
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      if (data.success) {
+        const { session_url } = data;
+        window.location.replace(session_url);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
   useEffect(() => {
     if (allCourses && allCourses.length > 0) {
       fetchCourseData();
     }
-  }, [allCourses, id]);
+  }, []);
+
+  useEffect(() => {
+    if (userData && courseData) {
+      setIsAlreadyEnrolled(userData.enrolledCourses.includes(courseData._id));
+    }
+  }, [userData, courseData]);
 
   const toggleSection = (index) => {
     setOpenSections((prev) => ({ ...prev, [index]: !prev[index] }));
@@ -94,7 +145,9 @@ const CourseDetails = () => {
 
             <p className="text-sm">
               Course by{" "}
-              <span className="text-blue-600 underline">EduGenie</span>
+              <span className="text-blue-600 underline">
+                {courseData.educator.name}
+              </span>
             </p>
 
             <div className="pt-8 text-gray-800">
@@ -149,9 +202,14 @@ const CourseDetails = () => {
                               <p>{lecture.lectureTitle}</p>
                               <div className="flex gap-2">
                                 {lecture.isPreviewFree && (
-                                  <p onClick={()=>setPlayerData({
-                                    videoId: lecture.lectureUrl.split('/').pop()
-                                  })}
+                                  <p
+                                    onClick={() =>
+                                      setPlayerData({
+                                        videoId: lecture.lectureUrl
+                                          .split("/")
+                                          .pop(),
+                                      })
+                                    }
                                     className="text-blue-500
                         cursor-pointer"
                                   >
@@ -193,20 +251,20 @@ const CourseDetails = () => {
             className="max-w-[424px] z-10 shadow-[0px_4px_15px_2px_rgba(0,0,0,0.1)] rounded-t
 md:rounded-none overflow-hidden bg-white min-w-[300px] sm:min-w-[420px]"
           >
+            {playerData ? (
+              <YouTube
+                videoId={playerData.videoId}
+                opts={{
+                  playerVars: {
+                    autoplay: 1,
+                  },
+                }}
+                iframeClassName="w-full aspect-video"
+              />
+            ) : (
+              <img src={courseData.courseThumbnail} alt="" />
+            )}
 
-            {
-              playerData ? 
-
-              <YouTube  videoId={playerData.videoId} opts={{playerVars: {
-                autoplay : 1
-              }}} iframeClassName='w-full aspect-video'/>
-
-              :
-            
-            <img src={courseData.courseThumbnail} alt="" /> }
-
-
-            
             <div className="p-5">
               <div className="flex items-center gap-2">
                 <img
@@ -265,7 +323,7 @@ md:pt-4 text-gray-500"
                 </div>
               </div>
 
-              <button className="md:mt-6 mt-4 w-full py-3 rounded bg-blue-600 text-white font-medium">
+              <button onClick={enrollCourse} className="md:mt-6 mt-4 w-full py-3 rounded bg-blue-600 text-white font-medium">
                 {isAlreadyEnrolled ? "Already Enrolled" : "Enroll Now"}
               </button>
 

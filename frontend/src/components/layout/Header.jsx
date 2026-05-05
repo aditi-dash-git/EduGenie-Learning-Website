@@ -3,13 +3,50 @@ import { assets } from "../../assets/assets";
 import { Link } from "react-router-dom";
 import { useClerk, UserButton, useUser } from "@clerk/react";
 import { AppContext } from "../../context/AppContext";
+import toast from "react-hot-toast";
+import axios from "axios";
 
 const Header = () => {
-  const { navigate, isEducator } = useContext(AppContext);
+  const { navigate, isEducator, backendUrl, setIsEducator, getToken } =
+    useContext(AppContext);
   const isCourseListPage = location.pathname.includes("/course-list");
 
   const { openSignIn } = useClerk();
   const { user } = useUser();
+
+  const becomeEducator = async () => {
+    try {
+      if (isEducator) {
+        navigate("/educator");
+        return;
+      }
+
+      const token = await getToken();
+      if (!token) return;
+
+      const { data } = await axios.post(
+        `${backendUrl}/api/educator/update-role`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (data?.success) {
+        setIsEducator(true);
+        toast.success(data.message);
+
+        // navigate("/educator"); // ✅ better UX
+      } else {
+        toast.error(data?.message || "Failed to update role");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(error?.message || "Something went wrong");
+    }
+  };
 
   return (
     <div
@@ -25,8 +62,10 @@ const Header = () => {
         <div className="flex items-center gap-5">
           {user && (
             <>
-              <button>Become Educator </button> |{" "}
-              <Link to="/my-enrollments">My Enrollments</Link>
+              <button onClick={becomeEducator}>
+                {isEducator ? "Educator Dashboard" : "Become Educator"}
+              </button>{" "}
+              | <Link to="/my-enrollments">My Enrollments</Link>
             </>
           )}
         </div>
@@ -48,11 +87,7 @@ const Header = () => {
         <div className="flex items-center gap-1 sm:gap-2 max-sm:text-xs">
           {user && (
             <>
-              <button
-                onClick={() => {
-                  navigate("/educator");
-                }}
-              >
+              <button onClick={becomeEducator}>
                 {isEducator ? "Educator Dashboard" : "Become Educator"}{" "}
               </button>
               | <Link to="/my-enrollments">My Enrollments</Link>

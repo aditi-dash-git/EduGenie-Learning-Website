@@ -6,7 +6,7 @@ import { requireAuth } from "@clerk/express";
 
 const educatorRouter = express.Router();
 
-educatorRouter.get('/update-role', updateRoleToEducator);
+educatorRouter.post('/update-role', requireAuth(), updateRoleToEducator);
 // educatorRouter.post('/add-course',protectEducator, upload.single('image'),  addCourse)
 educatorRouter.post("/add-course",upload.single('image'),addCourse)
 educatorRouter.get('/courses',requireAuth(),protectEducator,getEducatorCourses);
