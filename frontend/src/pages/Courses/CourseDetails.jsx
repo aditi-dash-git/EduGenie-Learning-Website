@@ -58,10 +58,10 @@ const CourseDetails = () => {
   const enrollCourse = async () => {
     try {
       if (!userData) {
-        return toast.warn("Login to Enroll");
+        return toast.error("Login to Enroll");
       }
       if (isAlreadyEnrolled) {
-        return toast.warn("Already Enrolled");
+        return toast.error("Already Enrolled");
       }
       const token = await getToken();
 
@@ -116,7 +116,7 @@ const CourseDetails = () => {
             {/* review and ratings  */}
 
             <div className="flex items-center space-x-2 pt-3 pb-1 text-sm">
-              <p>{calculateRating(courseData)}</p>
+              {/* <p>{calculateRating(courseData)}</p> */}
               <div className="flex">
                 {[...Array(5)].map((_, i) => (
                   <img
@@ -300,10 +300,20 @@ md:rounded-none overflow-hidden bg-white min-w-[300px] sm:min-w-[420px]"
                 className="flex items-center text-sm md:text-default gap-4 pt-2
 md:pt-4 text-gray-500"
               >
-                {/* Ratings for the course  */}
-                <div className="flex items-center gap-1">
-                  <img src={assets.star} alt="star icon" />
-                  <p>{calculateRating(courseData)}</p>
+                {/* Ratings for the course */}
+                <div className="flex items-center">
+                  {[...Array(5)].map((_, i) => (
+                    <img
+                      key={i}
+                      src={
+                        i < Math.floor(calculateRating(courseData))
+                          ? assets.star
+                          : assets.star_blank
+                      }
+                      alt="star"
+                      className="w-4 h-4"
+                    />
+                  ))}
                 </div>
 
                 <div className="h-4 w-px bg-gray-500/40"></div>
@@ -323,7 +333,10 @@ md:pt-4 text-gray-500"
                 </div>
               </div>
 
-              <button onClick={enrollCourse} className="md:mt-6 mt-4 w-full py-3 rounded bg-blue-600 text-white font-medium">
+              <button
+                onClick={enrollCourse}
+                className="md:mt-6 mt-4 w-full py-3 rounded bg-blue-600 text-white font-medium"
+              >
                 {isAlreadyEnrolled ? "Already Enrolled" : "Enroll Now"}
               </button>
 

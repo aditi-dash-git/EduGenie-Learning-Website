@@ -1,15 +1,26 @@
-import React from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import React from "react";
+import { Navigate, Outlet } from "react-router-dom";
+import { useUser } from "@clerk/react";
 
 const ProtectedRoute = () => {
-  const { isAuthenticated, loading } = useAuth();
+  const { isSignedIn, isLoaded } = useUser();
 
-  if (loading) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+  // Loading state
+  if (!isLoaded) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        Loading...
+      </div>
+    );
   }
 
-  return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
+  // If logged in → allow access
+  // Else → redirect to Clerk sign in
+  return isSignedIn ? (
+    <Outlet />
+  ) : (
+    <Navigate to="/sign-in" replace />
+  );
 };
 
 export default ProtectedRoute;

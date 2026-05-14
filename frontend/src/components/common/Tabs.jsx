@@ -3,34 +3,59 @@ import React from "react";
 const Tabs = ({ tabs, activeTab, setActiveTab }) => {
   return (
     <div className="w-full">
-      <div className="relative border-b-2 border-slate-100">
-        <nav className="flex gap-2">
-          {tabs.map((tab) => (
-            <button
-              key={tab.name}
-              onClick={() => setActiveTab(tab.name)}
-              className={`relative pb-4 px-2 md:px-6 text-sm font-semibold transition-all duration-200 ${
-                activeTab === tab.name
-                  ? "text-emerald-600"
-                  : "text-slate-600  hover:text-slate-900"
-              }`}
-            >
-              <span className="relative z-10">{tab.label}</span>
-              {activeTab === tab.name && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg shadow-emerald-500/25" />}
-              {activeTab === tab.name && <div className="absolute inset-0  bg-gradient-to-b from-emerald-50/50 to-transparent rounded-t-xl -z-10" />}
-            </button>
-          ))}
-        </nav>
+
+      {/* Tabs Header */}
+      <div className="relative mb-6">
+        <div className="flex flex-wrap gap-3 bg-white/70 backdrop-blur-xl border border-blue-100 rounded-2xl p-2 shadow-sm">
+
+          {tabs.map((tab) => {
+            const isActive = activeTab === tab.name;
+
+            return (
+              <button
+                key={tab.name}
+                onClick={() => setActiveTab(tab.name)}
+                className={`relative px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 overflow-hidden ${
+                  isActive
+                    ? "text-white shadow-lg shadow-blue-500/25"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-blue-50"
+                }`}
+              >
+
+                {/* Active Background */}
+                {isActive && (
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl" />
+                )}
+
+                {/* Shine Effect */}
+                {isActive && (
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] animate-[shine_2s_linear_infinite]" />
+                )}
+
+                {/* Text */}
+                <span className="relative z-10">
+                  {tab.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </div>
-      <div className="py-6">
+
+      {/* Tab Content */}
+      <div className="animate-in fade-in duration-300">
         {tabs.map((tab) => {
           if (tab.name === activeTab) {
             return (
-              <div key={tab.name} className="animate-in fade-in duration-300">
+              <div
+                key={tab.name}
+                className="animate-in fade-in slide-in-from-bottom-2 duration-300"
+              >
                 {tab.content}
               </div>
             );
           }
+
           return null;
         })}
       </div>

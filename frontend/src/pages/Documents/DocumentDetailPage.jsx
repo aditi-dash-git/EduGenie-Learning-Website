@@ -4,6 +4,10 @@ import documentService from "../../services/documentService";
 import Spinner from "../../components/common/Spinner";
 import toast from "react-hot-toast";
 import { ArrowLeft, ExternalLink } from "lucide-react";
+import { useAuth, useUser } from "@clerk/react";
+import { setAuthToken } from "../../utils/axiosInstance";
+
+
 import PageHeader from "../../components/common/PageHeader";
 import Tabs from "../../components/common/Tabs";
 import ChatInterface from "../../components/chat/ChatInterface";
@@ -12,26 +16,38 @@ import FlashcardManager from "../../components/flashcards/FlashcardManager";
 import QuizManager from "../../components/quizzes/QuizManager";
 
 const DocumentDetailPage = () => {
+  const { getToken, isLoaded } = useAuth();
+const { isSignedIn } = useUser();
   const { id } = useParams();
   const [document, setDocument] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("Content");
 
   useEffect(() => {
-    const fetchDocumentDetails = async () => {
-      try {
-        const data = await documentService.getDocumentById(id);
-        setDocument(data);
-      } catch (error) {
-        toast.error("Failed to fetch document details.");
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  if (!isLoaded || !isSignedIn) return;
 
-    fetchDocumentDetails();
-  }, [id]);
+  const fetchDocumentDetails = async () => {
+    try {
+      const token = await getToken();
+
+      console.log("SIGNED IN:", isSignedIn);
+      console.log("CLERK TOKEN:", token);
+
+      setAuthToken(token);
+
+      const data = await documentService.getDocumentById(id);
+
+      setDocument(data);
+    } catch (error) {
+      toast.error("Failed to fetch document details.");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchDocumentDetails();
+}, [id, isLoaded, isSignedIn]);;
 
   // Helper function to get the full PDF URL
   const getPdfUrl = () => {

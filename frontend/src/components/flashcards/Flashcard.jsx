@@ -9,37 +9,51 @@ const Flashcard = ({ flashcard, onToggleStar }) => {
   };
 
   return (
-    <div className="relative w-full h-72" style={{ perspective: "1000px" }}>
+    <div
+      className="relative w-full h-72"
+      style={{ perspective: "1000px" }}
+    >
       <div
-        className={`relative w-full h-full transition-transform duration-500 transform-gpu cursor-pointer`}
+        className="relative w-full h-full transition-transform duration-500 transform-gpu cursor-pointer"
         style={{
           transformStyle: "preserve-3d",
-          transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
+          transform: isFlipped
+            ? "rotateY(180deg)"
+            : "rotateY(0deg)",
         }}
         onClick={handleFlip}
       >
-        {/* Front of the card (Question) */}
+
+        {/* FRONT CARD */}
         <div
-          className="absolute inset-0 w-full h-full bg-white/80 backdrop-blur-xl border-2 border-slate-200/60 rounded-2xl shadow-xl shadow-slate-200/50 p-8 flex flex-col justify-between"
+          className="absolute inset-0 w-full h-full bg-white/90 backdrop-blur-xl border border-blue-100 rounded-3xl shadow-2xl shadow-blue-100/40 p-8 flex flex-col justify-between overflow-hidden"
           style={{
             backfaceVisibility: "hidden",
             WebkitBackfaceVisibility: "hidden",
           }}
         >
-          {/* Star Button  */}
-          <div className="flex items-start justify-between">
-            <div className="bg-slate-100 text-[10px] text-slate-600 rounded px-4 py-1 uppercase">
+
+          {/* Background Glow */}
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/[0.03] via-indigo-500/[0.02] to-cyan-500/[0.03]" />
+
+          {/* Top */}
+          <div className="relative z-10 flex items-start justify-between">
+
+            {/* Difficulty */}
+            <div className="px-4 py-1.5 rounded-full bg-gradient-to-r from-blue-100 to-indigo-100 text-[10px] font-bold uppercase tracking-wide text-blue-700 border border-blue-200 shadow-sm">
               {flashcard?.difficulty}
             </div>
+
+            {/* Star */}
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onToggleStar(flashcard._id);
               }}
-              className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 ${
+              className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-200 ${
                 flashcard.isStarred
-                  ? "bg-linear-to-br from-amber-400 to-yellow-500 text-white shadow-lg shadow-amber-500/25"
-                  : "bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-amber-500"
+                  ? "bg-gradient-to-r from-amber-400 to-yellow-500 text-white shadow-lg shadow-amber-500/25"
+                  : "bg-slate-100 text-slate-400 hover:bg-blue-50 hover:text-blue-500"
               }`}
             >
               <Star
@@ -50,37 +64,48 @@ const Flashcard = ({ flashcard, onToggleStar }) => {
             </button>
           </div>
 
-          {/* Question Content */}
-          <div className="flex-1 flex items-center justify-center px-4 py-6">
-            <p className="text-lg font-semibold text-slate-900 text-center leading-relaxed">
+          {/* Question */}
+          <div className="relative z-10 flex-1 flex items-center justify-center px-4 py-6">
+
+            <p className="text-xl font-bold text-slate-900 text-center leading-relaxed tracking-tight">
               {flashcard.question}
             </p>
           </div>
 
-          {/* Flip Indicator */}
-          <div className="flex items-center justify-center gap-2 text-xs text-slate-500 font-medium">
-            <RotateCcw className="w-3.5 h-3.5" strokeWidth={2} />
+          {/* Footer */}
+          <div className="relative z-10 flex items-center justify-center gap-2 text-xs text-slate-500 font-semibold">
+
+            <RotateCcw
+              className="w-3.5 h-3.5"
+              strokeWidth={2}
+            />
+
             <span>Click to reveal answer</span>
           </div>
         </div>
 
-        {/* Back of the card (Answer) */}
+        {/* BACK CARD */}
         <div
-          className="absolute inset-0 w-full h-full bg-linear-to-br from-emerald-500 to-teal-500 border-2 border-emerald-400/60 rounded-2xl shadow-xl shadow-emerald-500/30 p-8 flex flex-col justify-between"
+          className="absolute inset-0 w-full h-full bg-gradient-to-br from-blue-500 via-indigo-600 to-cyan-500 border border-blue-400/50 rounded-3xl shadow-2xl shadow-blue-500/30 p-8 flex flex-col justify-between overflow-hidden"
           style={{
             backfaceVisibility: "hidden",
             WebkitBackfaceVisibility: "hidden",
             transform: "rotateY(180deg)",
           }}
         >
-          {/* Star Button */}
-          <div className="flex justify-end">
+
+          {/* Glow Overlay */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.25),transparent_40%)]" />
+
+          {/* Top */}
+          <div className="relative z-10 flex justify-end">
+
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onToggleStar(flashcard._id);
               }}
-              className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 ${
+              className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-200 ${
                 flashcard.isStarred
                   ? "bg-white/30 backdrop-blur-sm text-white border border-white/40"
                   : "bg-white/20 backdrop-blur-sm text-white/70 hover:bg-white/30 hover:text-white border border-white/20"
@@ -94,14 +119,22 @@ const Flashcard = ({ flashcard, onToggleStar }) => {
             </button>
           </div>
 
-          {/* Answer Content */}
-          <div className="flex-1 flex items-center justify-center px-4 py-6">
-            <p className="text-base text-white text-center leading-relaxed font-medium">{flashcard.answer}</p>
+          {/* Answer */}
+          <div className="relative z-10 flex-1 flex items-center justify-center px-4 py-6">
+
+            <p className="text-base text-white text-center leading-relaxed font-medium">
+              {flashcard.answer}
+            </p>
           </div>
 
-          {/* Flip Indicator */}
-          <div className="flex items-center justify-center gap-2 text-xs text-white/70 font-medium">
-            <RotateCcw className="w-3.5 h-3.5" strokeWidth={2} />
+          {/* Footer */}
+          <div className="relative z-10 flex items-center justify-center gap-2 text-xs text-white/80 font-semibold">
+
+            <RotateCcw
+              className="w-3.5 h-3.5"
+              strokeWidth={2}
+            />
+
             <span>Click to see question</span>
           </div>
         </div>

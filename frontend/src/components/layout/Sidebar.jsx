@@ -23,16 +23,13 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
     navigate("/login");
   };
 
-  // ✅ STUDENT LINKS ONLY
   const navLinks = [
     { to: "/dashboard", icon: LayoutDashboard, text: "Dashboard" },
-    { to: "/home", icon: GraduationCap, text: "Courses" }, // 🔥 NEW
     { to: "/documents", icon: FileText, text: "Documents" },
     { to: "/flashcards", icon: BookOpen, text: "Flashcards" },
     { to: "/profile", icon: User, text: "Profile" },
   ];
 
-  // ❗ Hide sidebar in educator mode
   if (isEducator) return null;
 
   return (
@@ -49,19 +46,26 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-full w-64 bg-white/90 backdrop-blur-lg border-r border-slate-200/60 z-50 md:relative md:w-64 md:flex md:flex-col md:translate-x-0 transition-transform duration-300 ${
+        className={`fixed top-0 left-0 h-full w-64 bg-white border-r border-blue-100 z-50 md:relative md:w-64 md:flex md:flex-col md:translate-x-0 transition-transform duration-300 ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         {/* Logo */}
-        <div className="flex items-center justify-between h-16 px-5 border-b">
+        <div className="flex items-center justify-between h-20 px-5 border-b border-blue-100">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white">
+            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-md">
               <BrainCircuit size={20} />
             </div>
-            <h1 className="text-sm font-bold">
-              AI Learning Assistant
-            </h1>
+
+            <div>
+              <h1 onClick={() => navigate("/")} className="text-sm font-bold text-gray-800">
+                AI Learning
+              </h1>
+
+              <p className="text-xs text-gray-500">
+                Assistant
+              </p>
+            </div>
           </div>
 
           <button
@@ -73,31 +77,31 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-3 py-6 space-y-2">
+        <nav className="flex-1 px-4 py-6 space-y-3">
           {navLinks.map((link) => (
             <NavLink
               key={link.to}
               to={link.to}
               onClick={toggleSidebar}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-2 rounded-xl text-sm font-medium ${
+                `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                   isActive
-                    ? "bg-emerald-500 text-white"
-                    : "text-gray-700 hover:bg-gray-100"
+                    ? "bg-blue-600 text-white shadow-md"
+                    : "text-gray-700 hover:bg-blue-100"
                 }`
               }
             >
-              <link.icon size={18} />
+              <link.icon size={19} />
               {link.text}
             </NavLink>
           ))}
         </nav>
 
         {/* Logout */}
-        <div className="px-3 py-4 border-t">
+        <div className="px-4 py-5 border-t border-blue-100">
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-xl"
+            className="flex items-center gap-3 w-full px-4 py-3 text-sm font-medium text-red-500 hover:bg-red-50 rounded-xl transition"
           >
             <LogOut size={18} />
             Logout

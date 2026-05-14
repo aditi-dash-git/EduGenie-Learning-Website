@@ -11,9 +11,11 @@ const Footer = () => {
       >
         <div className="flex flex-col md:items-start items-center w-full">
           <img src={assets.logo_dark} alt="logo" />
-          <p className="mt-6 text-center md:text-left text-sm text-white/80">
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industry's standard dummy text.
+          <p className="text-center ml-8 md:text-left text-sm text-white/80">
+            EduGenie is an interactive e-learning platform designed to help
+            students learn through courses, quizzes, flashcards, and AI-powered
+            assistance. Explore high-quality educational content, track your
+            progress, and enhance your learning experience anytime, anywhere.
           </p>
         </div>
         <div className="flex flex-col md:items-start items-center w-full">
@@ -55,7 +57,7 @@ const Footer = () => {
         </div>
       </div>
       <p className="py-4 text-center text-xs md:text-sm text-white/60">
-        Copyright 2025 © GreatStack. All Right Reserved.
+        Copyright 2025 © EduGenie. All Right Reserved.
       </p>
     </footer>
   );

@@ -58,6 +58,8 @@ export const AppContextProvider = ({ children }) => {
         },
       });
 
+      console.log("Fetched User Data:", data);
+      
       if (data.success) {
         setUserData(data.user);
       } else {

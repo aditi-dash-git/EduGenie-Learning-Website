@@ -7,28 +7,38 @@ import { getAuth } from "@clerk/express";
 import { CourseProgress } from "../models/CourseProgress.js";
 
 // Get User Data
+// Get User Data
 export const getUserData = async (req, res) => {
   try {
+
     const { userId } = getAuth(req);
 
-    const user = await User.findOne({ clerkId: userId });
+    let user = await User.findOne({ clerkId: userId });
 
     if (!user) {
-      return res.json({
-        success: false,
-        message: "User Not Found",
+
+      user = await User.create({
+        clerkId: userId,
+        name: "New User",
+        email: `${userId}@gmail.com`,
       });
+
     }
 
-    res.json({
+    return res.json({
       success: true,
       user,
     });
+
   } catch (error) {
+
+    console.log(error);
+
     res.status(500).json({
       success: false,
       message: error.message,
     });
+
   }
 };
 

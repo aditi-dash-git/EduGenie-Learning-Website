@@ -1,19 +1,25 @@
 import React from "react";
-import { Routes, Route, Navigate, useMatch } from "react-router-dom";
-import { useAuth } from "./context/AuthContext";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+// import { useAuth } from "./context/AuthContext";
+
+import { useAuth } from "@clerk/react";
+import { useEffect } from "react";
+import { setAuthToken } from "./utils/axiosInstance";
 
 /* Auth */
-import LoginPage from "./pages/Auth/LoginPage";
-import RegisterPage from "./pages/Auth/RegisterPage";
+// import LoginPage from "./pages/Auth/LoginPage";
+// import RegisterPage from "./pages/Auth/RegisterPage";
+
+import { SignIn, SignUp, useUser } from "@clerk/react";
 
 /* Layouts */
-import MainLayout from "./components/layout/MainLayout"; // ❗ NEW (No Sidebar)
+// import MainLayout from "./components/layout/MainLayout"; // ❗ NEW (No Sidebar)
 import StudentLayout from "./components/layout/StudentLayout"; // Dashboard Layout
-import EducatorLayout from "./components/layout/EducatorLayout";
+// import EducatorLayout from "./components/layout/EducatorLayout";
 
 /* Protected */
 import ProtectedRoute from "./components/auth/ProtectedRoute";
-import EducatorRoute from "./components/auth/EducatorRoute";
+// import EducatorRoute from "./components/auth/EducatorRoute";
 
 /* Student Pages */
 import HomePage from "./pages/Courses/HomePage";
@@ -46,10 +52,32 @@ import { ToastContainer } from "react-toastify";
 import Loading from "./components/courses/Loading";
 
 const App = () => {
-  const { isAuthenticated, loading } = useAuth();
-  const isEducatorRoute = useMatch("/educator/*");
+  const { isSignedIn, isLoaded } = useUser();
+  const location = useLocation();
+  const { getToken } = useAuth();
 
-  if (loading) {
+  const isEducatorRoute = location.pathname.startsWith("/educator");
+
+  const isStudentDashboard =
+    location.pathname.startsWith("/dashboard") ||
+    location.pathname.startsWith("/documents") ||
+    location.pathname.startsWith("/flashcards") ||
+    location.pathname.startsWith("/quizzes") ||
+    location.pathname.startsWith("/profile");
+
+  useEffect(() => {
+    const loadToken = async () => {
+      console.log("SIGNED IN:", isSignedIn);
+      if (isSignedIn) {
+        const token = await getToken();
+        console.log("CLERK TOKEN:", token);
+        setAuthToken(token);
+      }
+    };
+    loadToken();
+  }, [isSignedIn]);
+
+  if (!isLoaded) {
     return (
       <div className="flex items-center justify-center h-screen">
         <p>Loading...</p>
@@ -60,46 +88,67 @@ const App = () => {
   return (
     <div className="text-default min-h-screen bg-white">
       <ToastContainer />
-      {!isEducatorRoute && <Header />}
+      {!isEducatorRoute && !isStudentDashboard && <Header />}
       {/* <Header /> */}
       <Routes>
         {/* Default Redirect */}
-        <Route
-          path="/"
-          element={
-            isAuthenticated ? (
-              <Navigate to="/home" replace />
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
-        />
+        <Route path="/" element={<Navigate to="/home" replace />} />
         {/* Auth */}
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+        <Route
+          path="/sign-in/*"
+          element={<SignIn routing="path" path="/sign-in" />}
+        />
+
+        <Route
+          path="/sign-up/*"
+          element={<SignUp routing="path" path="/sign-up" />}
+        />
+
         {/* ================= MAIN (NO SIDEBAR) ================= */}
-        <Route element={<ProtectedRoute />}>
-          {/* <Route element={<MainLayout />}> */}
-          <Route path="/home" element={<HomePage />} />
+        {/* <Route element={<ProtectedRoute />}> */}
+        {/* <Route element={<MainLayout />}> */}
+        {/* <Route path="/home" element={<HomePage />} />
           <Route path="/course-list" element={<CourseList />} />
           <Route path="/course-list/:input" element={<CourseList />} />
           <Route path="/courses/:id" element={<CourseDetails />} />
           <Route path="/watch/:courseId" element={<PlayerPage />} />
+          <Route path="/my-enrollments" element={<MyEnrollments />} /> */}
+        {/* </Route> */}
+        {/* </Route> */}
+
+        {/* ================= PUBLIC ROUTES ================= */}
+
+        <Route path="/home" element={<HomePage />} />
+        <Route path="/course-list" element={<CourseList />} />
+        <Route path="/course-list/:input" element={<CourseList />} />
+        <Route path="/courses/:id" element={<CourseDetails />} />
+
+        {/* ================= PROTECTED ROUTES ================= */}
+
+        <Route element={<ProtectedRoute />}>
+          <Route path="/watch/:courseId" element={<PlayerPage />} />
           <Route path="/my-enrollments" element={<MyEnrollments />} />
-          {/* </Route> */}
         </Route>
+
         {/* ================= DASHBOARD (WITH SIDEBAR) ================= */}
         <Route element={<ProtectedRoute />}>
-          {/* <Route element={<StudentLayout />}> */}
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/documents" element={<DocumentListPage />} />
-          <Route path="/documents/:id" element={<DocumentDetailPage />} />
-          <Route path="/flashcards" element={<FlashcardsListPage />} />
-          <Route path="/documents/:id/flashcards" element={<FlashcardPage />} />
-          <Route path="/quizzes/:quizId" element={<QuizTakePage />} />
-          <Route path="/quizzes/:quizId/results" element={<QuizResultPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          {/* </Route> */}
+          <Route element={<StudentLayout />}>
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/documents" element={<DocumentListPage />} />
+            <Route path="/documents/:id" element={<DocumentDetailPage />} />
+            <Route path="/flashcards" element={<FlashcardsListPage />} />
+            <Route
+              path="/documents/:id/flashcards"
+              element={<FlashcardPage />}
+            />
+            <Route path="/quizzes/:quizId" element={<QuizTakePage />} />
+            <Route
+              path="/quizzes/:quizId/results"
+              element={<QuizResultPage />}
+            />
+            <Route path="/profile" element={<ProfilePage />} />
+            {/* </Route> */}
+          </Route>
         </Route>
         {/* ================= EDUCATOR ================= */}
         <Route element={<ProtectedRoute />}>

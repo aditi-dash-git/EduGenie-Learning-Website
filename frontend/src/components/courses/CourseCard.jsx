@@ -10,17 +10,36 @@ const CourseCard = ({ course }) => {
     <Link
       to={"/courses/" + course._id}
       onClick={() => scrollTo(0, 0)}
-      className="border border-gray-500/30 pb-6 overflow-hidden rounded-lg"
+      className="group bg-white border border-slate-200 rounded-2xl overflow-hidden h-full flex flex-col shadow-sm hover:shadow-2xl hover:shadow-blue-100/40 hover:-translate-y-1 transition-all duration-300"
     >
-      <img src={course.courseThumbnail} alt="" className="w-full" />
-      <div className="p-3 text-left">
-        <h3 className="text-base font-semibold">{course.courseTitle}</h3>
-        <p className="text-gray-500">
+      {/* Course Image */}
+      <div className="w-full h-52 bg-slate-100 flex items-center justify-center overflow-hidden">
+        <img
+          src={course.courseThumbnail}
+          alt=""
+          className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300"
+        />
+      </div>
+
+      {/* Content */}
+      <div className="p-4 flex flex-col flex-1">
+        {/* Title */}
+        <h3 className="text-lg font-semibold text-slate-900 line-clamp-2 min-h-[56px]">
+          {course.courseTitle}
+        </h3>
+
+        {/* Educator */}
+        <p className="text-sm text-slate-500 mt-1">
           {course.educator?.name || "Unknown Instructor"}
         </p>
-        <div className="flex items-center space-x-2">
-          <p>{calculateRating(course)}</p>
-          <div className="flex">
+
+        {/* Rating */}
+        <div className="flex items-center gap-2 mt-3">
+          <p className="text-sm font-semibold text-blue-600">
+            {calculateRating(course)}
+          </p>
+
+          <div className="flex items-center">
             {[...Array(5)].map((_, i) => (
               <img
                 key={i}
@@ -34,19 +53,25 @@ const CourseCard = ({ course }) => {
               />
             ))}
           </div>
-          <p className="text-gray-500">{course.courseRatings.length}</p>
+
+          <p className="text-xs text-slate-500">
+            ({course.courseRatings.length})
+          </p>
         </div>
-        <p className="text-base font-semibold text-gray-800">
-          {" "}
-          {currency}
-          {(
-            course.coursePrice -
-            (course.discount * course.coursePrice) / 100
-          ).toFixed(2)}
-        </p>
+
+        {/* Price */}
+        <div className="mt-auto pt-4">
+          <p className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            {currency}
+
+            {(
+              course.coursePrice -
+              (course.discount * course.coursePrice) / 100
+            ).toFixed(2)}
+          </p>
+        </div>
       </div>
     </Link>
-    // </div>
   );
 };
 

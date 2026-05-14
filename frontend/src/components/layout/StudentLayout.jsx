@@ -1,18 +1,20 @@
 import React from "react";
-import Header from "./Header";
 import { Outlet } from "react-router-dom";
+import Sidebar from "./Sidebar";
 
 const StudentLayout = () => {
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="flex min-h-screen bg-[#f8fafc]">
 
-      {/* Header only
-      <Header /> */}
+      {/* Sidebar */}
+      <Sidebar />
 
-      {/* Page Content */}
-      <main className="p-6">
-        <Outlet />
-      </main>
+      {/* Main Content */}
+      <div className="flex-1 overflow-y-auto">
+        <main className="p-6">
+          <Outlet />
+        </main>
+      </div>
 
     </div>
   );

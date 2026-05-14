@@ -4,13 +4,23 @@ import Quiz from "../models/Quiz.js";
 import { extractTextFromPDF } from "../utils/pdfParser.js";
 import { chunkText } from "../utils/textChunker.js";
 import fs from "fs/promises";
-import mongoose from "mongoose";
+// import mongoose from "mongoose";
 
 // @desc    Upload PDF document
 // @route   POST /api/documents/upload
 // @access  Private
+
 export const uploadDocument = async (req, res, next) => {
   try {
+
+    // console.log("BODY:", req.body);
+    // console.log("FILE:", req.file);
+    // console.log("USER:", req.user);
+
+    // console.log(req.auth);
+    // console.log(req.auth?.userId);
+
+
     // Check if file exists..
     if (!req.file) {
       return res.status(400).json({
@@ -95,7 +105,7 @@ export const getDocuments = async (req, res, next) => {
   try {
     const documents = await Document.aggregate([
       {
-        $match: { userId: new mongoose.Types.ObjectId(req.user._id) },
+        $match: { userId: req.user._id, }
       },
       {
         $lookup: {

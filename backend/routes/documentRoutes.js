@@ -12,6 +12,7 @@ const router = express.Router();
 
 // All routes are protected
 router.use(protect);
+// console.log(protect);
 
 router.post('/upload', upload.single('file'), uploadDocument);
 router.get('/', getDocuments);

@@ -5,6 +5,7 @@ import CourseSection from "../../components/courses/CourseSection";
 import TestimonialsSection from "../../components/courses/TestimonialsSection";
 import CallToAction from "../../components/courses/CallToAction";
 import Footer from "../../components/layout/Footer";
+import AIAssistantSection from "../../components/courses/AIAssistantSection";
 
 const Home = () => {
   return (
@@ -52,6 +53,7 @@ const Home = () => {
       <Hero />
       <Companies />
       <CourseSection />
+      <AIAssistantSection />
       <TestimonialsSection />
       <CallToAction />
       <Footer />
