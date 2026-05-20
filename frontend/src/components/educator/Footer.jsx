@@ -14,7 +14,7 @@ items-center justify-between text-left w-full px-8 border-t border-gray-300"
           className="py-4 text-center text-xs md:text-sm
     text-gray-500"
         >
-          Copyright 2025 © EduGenie. All Right Reserved.
+          Copyright 2026 © EduGenie. All Right Reserved.
         </p>
       </div>
 

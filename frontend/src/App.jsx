@@ -122,6 +122,7 @@ const App = () => {
         <Route path="/course-list" element={<CourseList />} />
         <Route path="/course-list/:input" element={<CourseList />} />
         <Route path="/courses/:id" element={<CourseDetails />} />
+        
 
         {/* ================= PROTECTED ROUTES ================= */}
 

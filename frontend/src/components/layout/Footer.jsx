@@ -1,7 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { assets } from "../../assets/assets";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
+  const [showAbout, setShowAbout] = useState(false);
+  const [showContact, setShowContact] = useState(false);
+  const [showPrivacy, setShowPrivacy] = useState(false);
   return (
     <footer className="bg-gray-900 md:px-36 text-left w-full mt-10">
       <div
@@ -22,16 +26,34 @@ const Footer = () => {
           <h2 className="font-semibold text-white mb-5">Company</h2>
           <ul className="flex md:flex-col w-full justify-between text-sm text-white/80 md:space-y-2">
             <li>
-              <a href="#">Home</a>
+              <button className="hover:text-white transition">Home</button>
             </li>
+
             <li>
-              <a href="#">About us</a>
+              <button
+                onClick={() => setShowAbout(true)}
+                className="hover:text-white transition"
+              >
+                About us
+              </button>
             </li>
+
             <li>
-              <a href="#">Contact us</a>
+              <button
+                onClick={() => setShowContact(true)}
+                className="hover:text-white transition"
+              >
+                Contact us
+              </button>
             </li>
+
             <li>
-              <a href="#">Privacy policy</a>
+              <button
+                onClick={() => setShowPrivacy(true)}
+                className="hover:text-white transition"
+              >
+                Privacy policy
+              </button>
             </li>
           </ul>
         </div>
@@ -57,8 +79,69 @@ const Footer = () => {
         </div>
       </div>
       <p className="py-4 text-center text-xs md:text-sm text-white/60">
-        Copyright 2025 © EduGenie. All Right Reserved.
+        Copyright 2026 © EduGenie. All Right Reserved.
       </p>
+
+      {showAbout && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white max-w-lg w-full rounded-3xl p-8 relative">
+            <button
+              onClick={() => setShowAbout(false)}
+              className="absolute top-4 right-4 text-gray-500"
+            >
+              ✕
+            </button>
+
+            <h2 className="text-3xl font-bold mb-4">About EduGenie</h2>
+
+            <p className="text-gray-600 leading-relaxed">
+              EduGenie is an AI-powered e-learning platform designed to help
+              students learn smarter through quizzes, flashcards, documents, and
+              personalized educational assistance.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {showContact && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white max-w-lg w-full rounded-3xl p-8 relative">
+            <button
+              onClick={() => setShowContact(false)}
+              className="absolute top-4 right-4 text-gray-500"
+            >
+              ✕
+            </button>
+
+            <h2 className="text-3xl font-bold mb-4">Contact Us</h2>
+
+            <p className="text-gray-600 mb-2">Email: support@edugenie.com</p>
+
+            <p className="text-gray-600">Phone: +91 123456789</p>
+          </div>
+        </div>
+      )}
+
+      {showPrivacy && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white max-w-lg w-full rounded-3xl p-8 relative">
+            <button
+              onClick={() => setShowPrivacy(false)}
+              className="absolute top-4 right-4 text-gray-500"
+            >
+              ✕
+            </button>
+
+            <h2 className="text-3xl font-bold mb-4">Privacy Policy</h2>
+
+            <p className="text-gray-600 leading-relaxed">
+              EduGenie values your privacy and protects your personal
+              information. Your uploaded documents and learning data are
+              securely stored and never shared with third parties.
+            </p>
+          </div>
+        </div>
+      )}
     </footer>
   );
 };

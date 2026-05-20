@@ -1,6 +1,6 @@
 import React from "react";
 import Hero from "../../components/courses/Hero";
-import Companies from "../../components/courses/Companies";
+// import Companies from "../../components/courses/Companies";
 import CourseSection from "../../components/courses/CourseSection";
 import TestimonialsSection from "../../components/courses/TestimonialsSection";
 import CallToAction from "../../components/courses/CallToAction";
@@ -51,7 +51,7 @@ const Home = () => {
     // </div>
     <div className="flex flex-col items-center space-y-7 text-center ">
       <Hero />
-      <Companies />
+      {/* <Companies /> */}
       <CourseSection />
       <AIAssistantSection />
       <TestimonialsSection />

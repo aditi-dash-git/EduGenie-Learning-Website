@@ -120,7 +120,7 @@ const ProfilePage = () => {
                 </div>
 
                 {/* Clerk ID */}
-                <div>
+                {/* <div>
                   <label className="block text-xs font-bold uppercase tracking-[0.15em] text-slate-500 mb-2">
                     Clerk User ID
                   </label>
@@ -141,7 +141,7 @@ const ProfilePage = () => {
                       className="w-full h-12 pl-12 pr-4 border border-blue-100 rounded-2xl bg-blue-50/50 text-sm font-medium text-slate-700 cursor-not-allowed focus:outline-none"
                     />
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
 

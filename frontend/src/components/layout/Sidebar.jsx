@@ -104,7 +104,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
             className="flex items-center gap-3 w-full px-4 py-3 text-sm font-medium text-red-500 hover:bg-red-50 rounded-xl transition"
           >
             <LogOut size={18} />
-            Logout
+            HomePage
           </button>
         </div>
       </aside>
